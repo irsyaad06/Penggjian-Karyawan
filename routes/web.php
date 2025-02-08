@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HakAksesController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\JabatanController;
@@ -33,4 +34,9 @@ Route::resource('slip-gaji', SlipGajiController::class);
 Route::resource('potongan', PotonganController::class);
 Route::resource('laporan-gaji', LaporanGajiController::class);
 Route::get('slip-gaji/{id}/pdf', [SlipGajiController::class, 'generatePDF'])->name('slip-gaji.generatePDF');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+})->name('logout');
 
