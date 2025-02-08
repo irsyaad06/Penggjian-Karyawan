@@ -32,3 +32,5 @@ Route::resource('karyawan', KaryawanController::class);
 Route::resource('slip-gaji', SlipGajiController::class);
 Route::resource('potongan', PotonganController::class);
 Route::resource('laporan-gaji', LaporanGajiController::class);
+Route::get('slip-gaji/{id}/pdf', [SlipGajiController::class, 'generatePDF'])->name('slip-gaji.generatePDF');
+
