@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SlipGaji;
 use App\Models\LaporanGaji;
+use Carbon\Carbon;
 
 class LaporanGajiController extends Controller
 {
     public function index()
     {
-        $laporan = LaporanGaji::all();
+        $laporan = LaporanGaji::orderBy('periode', 'desc')->get();
         return view('laporan_gaji.index', compact('laporan'));
     }
 
@@ -24,20 +26,27 @@ class LaporanGajiController extends Controller
             'periode' => 'required|date_format:Y-m',
         ]);
 
-        // Ambil semua slip gaji dalam periode tersebut
+        // Cek apakah laporan sudah ada
+        if (LaporanGaji::where('periode', $request->periode)->exists()) {
+            return redirect()->route('laporan-gaji.index')->with('error', 'Laporan Gaji untuk periode ini sudah ada!');
+        }
+
+        // Simpan laporan
         $laporan = new LaporanGaji();
         $laporan->periode = $request->periode;
         $laporan->save();
 
-        return redirect()->route('laporan_gaji.index')->with('success', 'Laporan Gaji berhasil dibuat!');
+        return redirect()->route('laporan-gaji.index')->with('success', 'Laporan Gaji berhasil dibuat!');
     }
 
     public function show($id)
     {
         $laporan = LaporanGaji::findOrFail($id);
-        $slipGaji = SlipGaji::whereMonth('tanggal_gajian', date('m', strtotime($laporan->periode)))
-                            ->whereYear('tanggal_gajian', date('Y', strtotime($laporan->periode)))
-                            ->with('karyawan')
+
+        // Ambil slip gaji dalam periode yang sesuai
+        $slipGaji = SlipGaji::whereMonth('tanggal_gajian', Carbon::parse($laporan->periode)->month)
+                            ->whereYear('tanggal_gajian', Carbon::parse($laporan->periode)->year)
+                            ->with('karyawan.jabatan')
                             ->get();
 
         return view('laporan_gaji.show', compact('laporan', 'slipGaji'));

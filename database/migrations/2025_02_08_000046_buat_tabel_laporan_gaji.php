@@ -10,20 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('laporan_gaji', function (Blueprint $table) {
-        $table->id();
-        $table->date('periode');
-        $table->timestamps();
-    });
-}
-
+    {
+        Schema::create('laporan_gajis', function (Blueprint $table) {
+            $table->id();
+            $table->string('periode'); // Ubah ke string "YYYY-MM" agar lebih fleksibel
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('laporan_gajis');
     }
 };
