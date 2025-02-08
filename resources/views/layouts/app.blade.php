@@ -9,14 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-
         body {
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
             background-color: #f8f9fa;
         }
-
 
         .sidebar {
             width: 250px;
@@ -25,7 +23,7 @@
             flex-direction: column;
             align-items: center;
             padding-top: 15px;
-            background-color:  #12052a;
+            background-color: #12052a;
             transition: all 0.3s ease-in-out;
             position: fixed;
             left: 0;
@@ -33,20 +31,16 @@
             z-index: 1000;
         }
 
-
         .logo-container {
             text-align: center;
             margin-bottom: 15px;
-
         }
-
 
         .logo-container img {
             width: 120px;
             display: block;
             margin: 0 auto;
         }
-
 
         .sidebar ul {
             list-style: none;
@@ -57,7 +51,6 @@
             align-items: flex-start;
             margin-top: 10px;
         }
-
 
         .sidebar ul li {
             width: 100%;
@@ -73,13 +66,16 @@
             transition: background 0.3s ease;
         }
 
-        .sidebar ul li a:hover {
-            background-color: #495057;
+        .sidebar ul li a:hover,
+        .sidebar ul li.active a {
+            background-color: rgb(43, 15, 113);
         }
+
         .sidebar ul li a i {
             margin-right: 10px;
             font-size: 18px;
         }
+
         .logout-form {
             margin-top: auto;
             width: 100%;
@@ -103,11 +99,9 @@
             margin-right: 8px;
         }
 
-
         .logout-btn:hover {
             background-color: #c82333;
         }
-
 
         .content {
             margin-left: 250px;
@@ -116,24 +110,21 @@
             transition: all 0.3s ease-in-out;
         }
 
-
         .sidebar-hidden {
             width: 0;
             padding: 0;
             overflow: hidden;
         }
 
-
         .content-expanded {
             margin-left: 0;
         }
 
-
         .toggle-btn {
-            position: absolute;
+            position: fixed;
             top: 20px;
             left: 225px;
-            background: #343a40;
+            background: #12052a;
             color: white;
             border: none;
             width: 50px;
@@ -149,7 +140,7 @@
         }
 
         .toggle-btn:hover {
-            background: #495057;
+            background: rgb(43, 15, 113);
         }
 
         .sidebar-hidden+.toggle-btn {
@@ -163,15 +154,36 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="logo-container">
-            <img src="{{ asset('logo.webp') }}" alt="SIGAWAi Logo">
+            <img src="{{ asset('logo.png') }}" alt="SIGAWAi Logo">
         </div>
 
         <ul>
-            <li><a href="{{ route('karyawan.index') }}"><i class="fas fa-users"></i> Karyawan</a></li>
-            <li><a href="{{ route('jabatan.index') }}"><i class="fas fa-briefcase"></i> Jabatan</a></li>
-            <li><a href="{{ route('slip-gaji.index') }}"><i class="fas fa-file-invoice-dollar"></i> Slip Gaji</a></li>
-            <li><a href="{{ route('laporan-gaji.index') }}"><i class="fas fa-chart-line"></i> Laporan Gaji</a></li>
+            <li class="{{ request()->is('karyawan*') ? 'active' : '' }}">
+                <a href="{{ route('karyawan.index') }}"><i class="fas fa-users"></i> Karyawan</a>
+            </li>
+            <li class="{{ request()->is('jabatan*') ? 'active' : '' }}">
+                <a href="{{ route('jabatan.index') }}"><i class="fas fa-briefcase"></i> Jabatan</a>
+            </li>
+            <li class="{{ request()->is('slip-gaji*') ? 'active' : '' }}">
+                <a href="{{ route('slip-gaji.index') }}"><i class="fas fa-file-invoice-dollar"></i> Slip Gaji</a>
+            </li>
+            <li class="{{ request()->is('laporan-gaji*') ? 'active' : '' }}">
+                <a href="{{ route('laporan-gaji.index') }}"><i class="fas fa-chart-line"></i> Laporan Gaji</a>
+            </li>
+            <li class="{{ request()->is('cuti*') ? 'active' : '' }}">
+                <a href="{{ route('cuti.index') }}"><i class="fas fa-calendar-day"></i> Cuti</a>
+            </li>
+            <li class="{{ request()->is('pajak-penghasilan*') ? 'active' : '' }}">
+                <a href="{{ route('pajak_penghasilan.index') }}"><i class="fas fa-money-check-alt"></i> Pajak Penghasilan</a>
+            </li>
+            <li class="{{ request()->is('bonus-lembur*') ? 'active' : '' }}">
+                <a href="{{ route('bonus_lembur.index') }}"><i class="fas fa-hand-holding-usd"></i> Bonus & Lembur</a>
+            </li>
+            <li class="{{ request()->is('pembayaran-gaji*') ? 'active' : '' }}">
+                <a href="{{ route('pembayaran_gaji.index') }}"><i class="fas fa-money-bill-wave"></i> Pembayaran Gaji</a>
+            </li>
         </ul>
+
 
         <!-- Tombol Logout -->
         <form class="logout-form" action="{{ route('logout') }}" method="POST">
@@ -180,11 +192,9 @@
         </form>
     </div>
 
-
     <button class="toggle-btn" id="toggleSidebar">
         <i class="fas fa-bars"></i>
     </button>
-
 
     <div class="content" id="content">
         <div class="container mt-4">
@@ -210,7 +220,12 @@
             }
         });
     </script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        setTimeout(function() {
+            $(".alert").fadeOut("slow");
+        }, 1000);
+    </script>
 </body>
 
 </html>
