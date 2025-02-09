@@ -14,7 +14,7 @@
                     <h2>{{ $totalKaryawan }}</h2>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <span>Lihat Detail</span>
+                    <a href="/karyawan" class="text-white">Lihat Detail</a>
                     <i class="fas fa-users fa-2x"></i>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                     <h2>{{ $totalSlipGajiDibayar }}</h2>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <span>Lihat Detail</span>
+                    <a href="/slip_gaji" class="text-white">Lihat Detail</a>
                     <i class="fas fa-file-invoice-dollar fa-2x"></i>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                     <h2>Rp {{ number_format($totalGajiDibayar, 0, ',', '.') }}</h2>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <span>Lihat Detail</span>
+                    <a href="/pembayaran_gaji" class="text-white">Lihat Detail</a>
                     <i class="fas fa-money-bill-wave fa-2x"></i>
                 </div>
             </div>
@@ -55,8 +55,7 @@
                     <h5>Total Transaksi</h5>
                     <h2>{{ $totalTransaksi }}</h2>
                 </div>
-                <div class="card-footer d-flex justify-content-between align-items-center">
-                    <span>Lihat Detail</span>
+                <div class="card-footer d-flex justify-content-end align-items-center">
                     <i class="fas fa-exchange-alt fa-2x"></i>
                 </div>
             </div>
