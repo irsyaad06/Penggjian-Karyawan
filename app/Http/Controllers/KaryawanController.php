@@ -8,9 +8,21 @@ use Illuminate\Http\Request;
 
 class KaryawanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $karyawan = Karyawan::with('jabatan')->get();
+        $search = $request->input('search');
+
+        $karyawan = Karyawan::with('jabatan')
+            ->when($search, function ($query, $search) {
+                return $query->where('nama', 'like', "%$search%")
+                    ->orWhereHas('jabatan', function ($q) use ($search) {
+                        $q->where('nama_jabatan', 'like', "%$search%");
+                    })
+                    ->orWhere('email', 'like', "%$search%")
+                    ->orWhere('telepon', 'like', "%$search%");
+            })
+            ->get();
+
         return view('karyawan.index', compact('karyawan'));
     }
 

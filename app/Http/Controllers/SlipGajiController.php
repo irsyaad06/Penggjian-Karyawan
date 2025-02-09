@@ -14,11 +14,29 @@ use Illuminate\Http\Request;
 
 class SlipGajiController extends Controller
 {
-    public function index()
-    {
-        $slipGaji = SlipGaji::with('karyawan')->get();
-        return view('slip_gaji.index', compact('slipGaji'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $slipGaji = SlipGaji::with('karyawan')
+        ->when($search, function ($query, $search) {
+            return $query->whereHas('karyawan', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%$search%");
+                })
+                ->orWhere('bulan', 'like', "%$search%")
+                ->orWhere('tahun', 'like', "%$search%")
+                ->orWhere('gaji_pokok', 'like', "%$search%")
+                ->orWhere('total_bonus', 'like', "%$search%")
+                ->orWhere('total_lembur', 'like', "%$search%")
+                ->orWhere('total_pajak', 'like', "%$search%")
+                ->orWhere('total_potongan', 'like', "%$search%")
+                ->orWhere('jumlah_gaji', 'like', "%$search%");
+        })
+        ->get();
+
+    return view('slip_gaji.index', compact('slipGaji'));
+}
+
 
     public function create()
     {

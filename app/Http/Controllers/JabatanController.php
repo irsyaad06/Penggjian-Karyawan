@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class JabatanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $jabatan = Jabatan::all();
+        $search = $request->input('search');
+        
+        $jabatan = Jabatan::when($search, function ($query, $search) {
+            return $query->where('nama_jabatan', 'like', "%$search%");
+        })->get();
+        
         return view('jabatan.index', compact('jabatan'));
     }
 

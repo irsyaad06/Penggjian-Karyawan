@@ -9,11 +9,23 @@ use Illuminate\Http\Request;
 
 class PembayaranGajiController extends Controller
 {
-    public function index()
-    {
-        $pembayaranGaji = PembayaranGaji::with(['karyawan', 'slipGaji'])->get();
-        return view('pembayaran_gaji.index', compact('pembayaranGaji'));
+    public function index(Request $request)
+{
+    $query = PembayaranGaji::with(['karyawan', 'slipGaji']);
+
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->whereHas('karyawan', function ($q) use ($search) {
+            $q->where('nama', 'like', "%$search%");
+        })->orWhere('metode_pembayaran', 'like', "%$search%")
+          ->orWhere('status', 'like', "%$search%");
     }
+
+    $pembayaranGaji = $query->get();
+
+    return view('pembayaran_gaji.index', compact('pembayaranGaji'));
+}
+
 
     public function create(Request $request)
     {

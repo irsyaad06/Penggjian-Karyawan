@@ -12,7 +12,15 @@
     @endif
 
     <div class="card">
-        <div class="card-header">Data Pembayaran Gaji</div>
+        <div class="card-header d-flex justify-content-between align-items-center"> 
+            <h5>Data Pembayaran Gaji</h5>
+            <form action="{{ route('pembayaran_gaji.index') }}" method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan nama karyawan, metode pembayaran, atau status" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
+        </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>

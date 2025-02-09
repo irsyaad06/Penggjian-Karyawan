@@ -8,11 +8,25 @@ use Illuminate\Http\Request;
 
 class PotonganController extends Controller
 {
-    public function index()
-    {
-        $potongan = Potongan::with('karyawan')->get();
-        return view('potongan.index', compact('potongan'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $potongan = Potongan::with('karyawan')
+        ->when($search, function ($query, $search) {
+            return $query->whereHas('karyawan', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%$search%");
+                })
+                ->orWhere('bulan', 'like', "%$search%")
+                ->orWhere('tahun', 'like', "%$search%")
+                ->orWhere('jumlah_potongan', 'like', "%$search%")
+                ->orWhere('keterangan', 'like', "%$search%");
+        })
+        ->get();
+
+    return view('potongan.index', compact('potongan'));
+}
+
 
     public function create()
     {

@@ -8,11 +8,25 @@ use Illuminate\Http\Request;
 
 class BonusLemburController extends Controller
 {
-    public function index()
-    {
-        $bonusLembur = BonusLembur::with('karyawan')->get();
-        return view('bonus_lembur.index', compact('bonusLembur'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $bonusLembur = BonusLembur::with('karyawan')
+        ->when($search, function ($query, $search) {
+            return $query->whereHas('karyawan', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%$search%");
+                })
+                ->orWhere('bulan', 'like', "%$search%")
+                ->orWhere('tahun', 'like', "%$search%")
+                ->orWhere('bonus', 'like', "%$search%")
+                ->orWhere('lembur', 'like', "%$search%");
+        })
+        ->get();
+
+    return view('bonus_lembur.index', compact('bonusLembur'));
+}
+
 
     public function create()
     {

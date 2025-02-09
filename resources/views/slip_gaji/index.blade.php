@@ -13,8 +13,14 @@
     <a href="{{ route('slip_gaji.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Tambah Slip Gaji</a>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h5>Data Slip Gaji</h5>
+            <form method="GET" action="{{ route('slip_gaji.index') }}" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan karyawan, bulan, tahun, gaji, bonus, dll." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -49,7 +55,6 @@
                         <td>
                             <a href="{{ route('slip_gaji.show', $item->id) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
 
-                            <!-- ✅ PERBAIKAN: Ganti $slip menjadi $item -->
                             <a href="{{ route('slip_gaji.downloadPDF', $item->id) }}" class="btn btn-success btn-sm">
                                 <i class="fas fa-file-pdf"></i>
                             </a>

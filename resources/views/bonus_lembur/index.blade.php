@@ -10,11 +10,18 @@
             </div>
         @endif
 
+        
         <a href="{{ route('bonus_lembur.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Tambah Bonus & Lembur</a>
-
+        
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5>Data Bonus & Lembur</h5>
+                <form method="GET" action="{{ route('bonus_lembur.index') }}" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan karyawan, bulan, tahun, bonus, atau lembur" value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary">Cari</button>
+                    </div>
+                </form>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">
@@ -30,7 +37,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($bonusLembur as $index => $item)
+                        @forelse($bonusLembur as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item->karyawan->nama }}</td>
@@ -42,14 +49,18 @@
                                     <a href="{{ route('bonus_lembur.edit', $item->id) }}" class="btn btn-warning btn-sm">Ubah</a>
                                     
                                     <!-- Delete Form -->
-                                    <form method="POST" action="{{ route('bonus_lembur.destroy', $item->id) }}" style="display:inline;">
+                                    <form method="POST" action="{{ route('bonus_lembur.destroy', $item->id) }}" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada data bonus & lembur</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

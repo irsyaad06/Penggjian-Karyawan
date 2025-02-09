@@ -8,11 +8,23 @@ use Illuminate\Http\Request;
 
 class PajakPenghasilanController extends Controller
 {
-    public function index()
-    {
-        $pajakPenghasilan = PajakPenghasilan::with('karyawan')->get();
-        return view('pajak_penghasilan.index', compact('pajakPenghasilan'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $pajakPenghasilan = PajakPenghasilan::with('karyawan')
+        ->when($search, function ($query, $search) {
+            return $query->whereHas('karyawan', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%$search%");
+                })
+                ->orWhere('bulan', 'like', "%$search%")
+                ->orWhere('tahun', 'like', "%$search%")
+                ->orWhere('jumlah_pajak', 'like', "%$search%");
+        })
+        ->get();
+
+    return view('pajak_penghasilan.index', compact('pajakPenghasilan'));
+}
 
     public function create()
     {
