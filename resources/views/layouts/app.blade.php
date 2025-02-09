@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistem Penggajian')</title>
 
-    <!-- CSS Libraries -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -18,7 +17,6 @@
             background-color: #f8f9fa;
         }
 
-        /* Sidebar Styling */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -72,7 +70,6 @@
             font-size: 18px;
         }
 
-        /* Logout Button (Selalu di bawah) */
         .logout-container {
             margin-top: auto;
             width: 90%;
@@ -103,7 +100,6 @@
             background-color: #c82333;
         }
 
-        /* Main Content Styling */
         .content {
             margin-left: 250px;
             width: 100%;
@@ -121,7 +117,6 @@
             margin-left: 0;
         }
 
-        /* Sidebar Toggle Button */
         .toggle-btn {
             position: fixed;
             top: 20px;
@@ -153,7 +148,7 @@
 
 <body>
 
-    <!-- Sidebar (Hanya Tampil Jika User Login) -->
+
     @auth
     <div class="sidebar" id="sidebar">
         <div class="logo-container">
@@ -163,6 +158,9 @@
         <ul>
             <!-- Menu untuk Admin -->
             @if(Auth::check() && auth()->user()->isAdmin())
+            <li class="{{ request()->is('dashboard*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
+            </li>
             <li class="{{ request()->is('jabatan*') ? 'active' : '' }}">
                 <a href="{{ route('jabatan.index') }}"><i class="fas fa-briefcase"></i> Jabatan</a>
             </li>
@@ -210,14 +208,12 @@
     </button>
     @endauth
 
-    <!-- Main Content -->
     <div class="content" id="content">
         <div class="container mt-4">
             @yield('content')
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('toggleSidebar').addEventListener('click', function() {
