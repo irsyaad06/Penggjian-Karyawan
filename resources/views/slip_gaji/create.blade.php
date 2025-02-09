@@ -1,57 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-4">Tambah Pembayaran Gaji</h1>
+    <div class="container">
+        <h1 class="mb-4">Tambah Slip Gaji</h1>
 
-    <form action="{{ route('pembayaran_gaji.store') }}" method="POST">
-        @csrf
+        <!-- ✅ ALERT ERROR -->
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Gagal!</strong> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label for="karyawan" class="form-label">Karyawan</label>
-            <select id="karyawan" name="karyawan_id" class="form-control">
-                <option value="">Pilih Karyawan</option>
-                @foreach($karyawan as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama }} - {{ $k->jabatan->nama_jabatan }}</option>
-                @endforeach
-            </select>
+        <div class="card">
+            <div class="card-header">
+                <h5>Form Slip Gaji</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('slip_gaji.store') }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="karyawan_id">Karyawan</label>
+                        <select name="karyawan_id" class="form-control" required>
+                            <option value="">Pilih Karyawan</option>
+                            @foreach($karyawan as $k)
+                                <option value="{{ $k->id }}">{{ $k->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="bulan">Bulan</label>
+                        <select name="bulan" class="form-control" required>
+                            @foreach(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $bulan)
+                                <option value="{{ $bulan }}">{{ $bulan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="tahun">Tahun</label>
+                        <input type="number" name="tahun" class="form-control" required value="{{ date('Y') }}">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4">Generate Slip Gaji</button>
+                </form>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="slip_gaji" class="form-label">Slip Gaji</label>
-            <select id="slip_gaji" name="slip_gaji_id" class="form-control">
-                <option value="">Pilih Slip Gaji</option>
-                @foreach($slipGaji as $slip)
-                    <option value="{{ $slip->id }}">Bulan: {{ $slip->bulan }}, Tahun: {{ $slip->tahun }} - Rp {{ number_format($slip->jumlah_gaji, 0, ',', '.') }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan</button>
-    </form>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('#karyawan').change(function() {
-        let karyawanId = $(this).val();
-        if (karyawanId) {
-            $.ajax({
-                url: "{{ route('pembayaran_gaji.create') }}",
-                type: "GET",
-                data: { karyawan_id: karyawanId },
-                success: function(response) {
-                    let slipGajiDropdown = $('#slip_gaji');
-                    slipGajiDropdown.empty();
-                    slipGajiDropdown.append('<option value="">Pilih Slip Gaji</option>');
-                    response.slipGaji.forEach(function(slip) {
-                        slipGajiDropdown.append(`<option value="${slip.id}">Bulan: ${slip.bulan}, Tahun: ${slip.tahun} - Rp ${new Intl.NumberFormat('id-ID').format(slip.jumlah_gaji)}</option>`);
-                    });
-                }
-            });
-        }
-    });
-});
-</script>
+        <a href="{{ route('slip_gaji.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+    </div>
 @endsection
+
