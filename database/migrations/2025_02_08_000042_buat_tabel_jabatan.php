@@ -10,15 +10,14 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('jabatan', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->decimal('gaji_pokok', 10, 2);
-        $table->decimal('tunjangan', 10, 2)->nullable();
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('jabatan', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_jabatan');
+            $table->decimal('gaji_pokok', 15, 2);
+            $table->timestamps();
+        });
+    }
 
 
     /**

@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('bonus_lembur', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('karyawan_id');
-            $table->string('bulan');
+            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->decimal('bonus', 15, 2);
+            $table->decimal('lembur', 15, 2);
+            $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);
             $table->year('tahun');
-            $table->decimal('bonus', 10, 2)->nullable();
-            $table->decimal('lembur', 10, 2)->nullable();
-            $table->enum('status_bayar', ['belum_bayar', 'sudah_bayar']);
             $table->timestamps();
-
-            $table->foreign('karyawan_id')->references('id')->on('karyawan')->onDelete('cascade');
         });
     }
 

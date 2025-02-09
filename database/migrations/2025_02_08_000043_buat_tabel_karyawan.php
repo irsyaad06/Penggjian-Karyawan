@@ -10,18 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('karyawan', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->string('email')->unique();
-        $table->string('no_hp')->nullable();
-        $table->unsignedBigInteger('jabatan_id');
-        $table->timestamps();
-
-        $table->foreign('jabatan_id')->references('id')->on('jabatan')->onDelete('cascade');
-    });
-}
+    {
+        Schema::create('karyawan', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->string('alamat');
+            $table->string('email')->unique();
+            $table->string('telepon');
+            $table->foreignId('jabatan_id')->constrained('jabatan'); // Referensi ke tabel jabatan tanpa 's'
+            $table->timestamps();
+        });
+    }
 
 
     /**

@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Pengguna;
 use App\Models\HakAkses;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class PenggunaController extends Controller
 {
@@ -23,19 +23,14 @@ class PenggunaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:pengguna',
-            'password' => 'required|min:6',
             'hak_akses_id' => 'required|exists:hak_akses,id',
+            'nama' => 'required|string',
+            'password' => 'required|string|min:6',
         ]);
 
-        Pengguna::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'hak_akses_id' => $request->hak_akses_id,
-        ]);
-
+        $request['password'] = bcrypt($request->password);
+        Pengguna::create($request->all());
         return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil ditambahkan!');
     }
 
@@ -48,21 +43,24 @@ class PenggunaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $pengguna = Pengguna::findOrFail($id);
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:pengguna,email,' . $id,
+            'email' => 'required|email',
             'hak_akses_id' => 'required|exists:hak_akses,id',
+            'nama' => 'required|string',
         ]);
 
-        $pengguna->update($request->except('password'));
-
+        $pengguna = Pengguna::findOrFail($id);
+        if ($request->password) {
+            $request['password'] = bcrypt($request->password);
+        }
+        $pengguna->update($request->all());
         return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Pengguna::destroy($id);
+        $pengguna = Pengguna::findOrFail($id);
+        $pengguna->delete();
         return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil dihapus!');
     }
 }

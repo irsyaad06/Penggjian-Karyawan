@@ -2,53 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SlipGaji;
 use App\Models\LaporanGaji;
-use Carbon\Carbon;
+use App\Models\Karyawan;
+use Illuminate\Http\Request;
 
 class LaporanGajiController extends Controller
 {
     public function index()
     {
-        $laporan = LaporanGaji::orderBy('periode', 'desc')->get();
-        return view('laporan_gaji.index', compact('laporan'));
+        $laporanGaji = LaporanGaji::with('karyawan')->get();
+        return view('laporan_gaji.index', compact('laporanGaji'));
     }
 
     public function create()
     {
-        return view('laporan_gaji.create');
+        $karyawan = Karyawan::all();
+        return view('laporan_gaji.create', compact('karyawan'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'periode' => 'required|date_format:Y-m',
+            'karyawan_id' => 'required|exists:karyawan,id',
+            'jumlah_gaji' => 'required|numeric',
+            'pajak' => 'required|numeric',
+            'bonus' => 'required|numeric',
+            'lembur' => 'required|numeric',
+            'potongan' => 'required|numeric',
+            'bulan' => 'required|string',
+            'tahun' => 'required|integer',
         ]);
 
-        // Cek apakah laporan sudah ada
-        if (LaporanGaji::where('periode', $request->periode)->exists()) {
-            return redirect()->route('laporan-gaji.index')->with('error', 'Laporan Gaji untuk periode ini sudah ada!');
-        }
-
-        // Simpan laporan
-        $laporan = new LaporanGaji();
-        $laporan->periode = $request->periode;
-        $laporan->save();
-
-        return redirect()->route('laporan-gaji.index')->with('success', 'Laporan Gaji berhasil dibuat!');
+        LaporanGaji::create($request->all());
+        return redirect()->route('laporan_gaji.index')->with('success', 'Laporan Gaji berhasil ditambahkan!');
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        $laporan = LaporanGaji::findOrFail($id);
+        $laporanGaji = LaporanGaji::findOrFail($id);
+        $karyawan = Karyawan::all();
+        return view('laporan_gaji.edit', compact('laporanGaji', 'karyawan'));
+    }
 
-        // Ambil slip gaji dalam periode yang sesuai
-        $slipGaji = SlipGaji::whereMonth('tanggal_gajian', Carbon::parse($laporan->periode)->month)
-                            ->whereYear('tanggal_gajian', Carbon::parse($laporan->periode)->year)
-                            ->with('karyawan.jabatan')
-                            ->get();
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jumlah_gaji' => 'required|numeric',
+        ]);
 
-        return view('laporan_gaji.show', compact('laporan', 'slipGaji'));
+        $laporanGaji = LaporanGaji::findOrFail($id);
+        $laporanGaji->update($request->all());
+        return redirect()->route('laporan_gaji.index')->with('success', 'Laporan Gaji berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $laporanGaji = LaporanGaji::findOrFail($id);
+        $laporanGaji->delete();
+        return redirect()->route('laporan_gaji.index')->with('success', 'Laporan Gaji berhasil dihapus!');
     }
 }

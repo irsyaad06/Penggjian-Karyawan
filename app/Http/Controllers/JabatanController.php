@@ -21,13 +21,11 @@ class JabatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'gaji_pokok' => 'required|numeric|min:0',
-            'tunjangan' => 'nullable|numeric|min:0',
+            'nama_jabatan' => 'required|string|unique:jabatan',
+            'gaji_pokok' => 'required|numeric',
         ]);
 
         Jabatan::create($request->all());
-
         return redirect()->route('jabatan.index')->with('success', 'Jabatan berhasil ditambahkan!');
     }
 
@@ -39,22 +37,20 @@ class JabatanController extends Controller
 
     public function update(Request $request, $id)
     {
-        $jabatan = Jabatan::findOrFail($id);
-
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'gaji_pokok' => 'required|numeric|min:0',
-            'tunjangan' => 'nullable|numeric|min:0',
+            'nama_jabatan' => 'required|string',
+            'gaji_pokok' => 'required|numeric',
         ]);
 
+        $jabatan = Jabatan::findOrFail($id);
         $jabatan->update($request->all());
-
         return redirect()->route('jabatan.index')->with('success', 'Jabatan berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Jabatan::destroy($id);
+        $jabatan = Jabatan::findOrFail($id);
+        $jabatan->delete();
         return redirect()->route('jabatan.index')->with('success', 'Jabatan berhasil dihapus!');
     }
 }

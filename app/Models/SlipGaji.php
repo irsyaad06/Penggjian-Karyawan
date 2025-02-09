@@ -10,15 +10,25 @@ class SlipGaji extends Model
     use HasFactory;
 
     protected $table = 'slip_gaji';
-    protected $fillable = ['karyawan_id', 'gaji_bersih', 'pajak', 'potongan_bpjs', 'tanggal_gajian'];
+    protected $fillable = [
+        'karyawan_id',
+        'gaji_pokok',
+        'total_bonus',
+        'total_lembur',
+        'total_pajak',
+        'total_potongan',
+        'jumlah_gaji',
+        'bulan',
+        'tahun'
+    ];
 
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(Karyawan::class, 'karyawan_id');
     }
 
-    public function potongan()
+    public function pembayaranGaji()
     {
-        return $this->hasMany(Potongan::class);
+        return $this->hasOne(PembayaranGaji::class, 'slip_gaji_id');
     }
 }

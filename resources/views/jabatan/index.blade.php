@@ -1,44 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Daftar Jabatan</h2>
-    <a href="{{ route('jabatan.create') }}" class="btn btn-primary">Tambah Jabatan</a>
+    <div class="container">
+        <h1 class="mb-4">Daftar Jabatan</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success mt-2">
-            {{ session('success') }}
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <a href="{{ route('jabatan.create') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Tambah Jabatan</a>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Jabatan yang Tersedia</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Jabatan</th>
+                            <th>Gaji Pokok</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($jabatan as $index => $item)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $item->nama_jabatan }}</td>
+                                <td>Rp {{ number_format($item->gaji_pokok, 0, ',', '.') }}</td>
+                                <td>
+                                    <a href="{{ route('jabatan.edit', $item->id) }}" class="btn btn-warning btn-sm">Ubah</a>
+                                    
+                                    <!-- Delete Form -->
+                                    <form method="POST" action="{{ route('jabatan.destroy', $item->id) }}" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
-    @endif
-
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nama Jabatan</th>
-                <th>Gaji Pokok</th>
-                <th>Tunjangan</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($jabatan as $j)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $j->nama }}</td>
-                <td>Rp {{ number_format($j->gaji_pokok, 0, ',', '.') }}</td>
-                <td>Rp {{ number_format($j->tunjangan, 0, ',', '.') }}</td>
-                <td>
-                    <a href="{{ route('jabatan.edit', $j->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('jabatan.destroy', $j->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus jabatan ini?')">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+    </div>
 @endsection

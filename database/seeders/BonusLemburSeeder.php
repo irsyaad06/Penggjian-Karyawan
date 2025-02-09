@@ -1,25 +1,29 @@
 <?php
 
 namespace Database\Seeders;
-use Illuminate\Database\Seeder;
+
 use App\Models\BonusLembur;
 use App\Models\Karyawan;
+use Illuminate\Database\Seeder;
 
 class BonusLemburSeeder extends Seeder
 {
     public function run()
     {
-        $karyawan = Karyawan::all(); // Ambil semua data karyawan
+        BonusLembur::create([
+            'karyawan_id' => Karyawan::where('nama', 'John Doe')->first()->id,
+            'bonus' => 1000000,
+            'lembur' => 500000,
+            'bulan' => 'Januari',
+            'tahun' => 2025,
+        ]);
 
-        foreach ($karyawan as $k) {
-            BonusLembur::create([
-                'karyawan_id' => $k->id,
-                'bulan' => now()->month,
-                'tahun' => now()->year,
-                'bonus' => rand(100000, 500000),
-                'lembur' => rand(50000, 200000),
-                'status_bayar' => 'belum_bayar',
-            ]);
-        }
+        BonusLembur::create([
+            'karyawan_id' => Karyawan::where('nama', 'Jane Smith')->first()->id,
+            'bonus' => 500000,
+            'lembur' => 250000,
+            'bulan' => 'Februari',
+            'tahun' => 2025,
+        ]);
     }
 }

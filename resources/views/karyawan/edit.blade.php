@@ -1,50 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Edit Karyawan</h2>
-    <form action="{{ route('karyawan.update', $karyawan->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+    <div class="container">
+        <h1 class="mb-4">Edit Karyawan</h1>
 
-        <div class="mb-3">
-            <label>Nama</label>
-            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', $karyawan->nama) }}" required>
-            @error('nama')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+        <div class="card">
+            <div class="card-header">
+                <h5>Form Edit Karyawan: {{ $karyawan->nama }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('karyawan.update', $karyawan->id) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="form-group">
+                        <label for="nama">Nama</label>
+                        <input type="text" name="nama" class="form-control" value="{{ $karyawan->nama }}" required>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="jabatan_id">Jabatan</label>
+                        <select name="jabatan_id" class="form-control" required>
+                            @foreach($jabatan as $j)
+                                <option value="{{ $j->id }}" {{ $karyawan->jabatan_id == $j->id ? 'selected' : '' }}>
+                                    {{ $j->nama_jabatan }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ $karyawan->email }}" required>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="telepon">Telepon</label>
+                        <input type="text" name="telepon" class="form-control" value="{{ $karyawan->telepon }}" required>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="alamat">Alamat</label>
+                        <textarea name="alamat" class="form-control" required>{{ $karyawan->alamat }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4">Simpan Perubahan</button>
+                </form>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $karyawan->email) }}" required>
-            @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label>No HP</label>
-            <input type="text" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp', $karyawan->no_hp) }}">
-            @error('no_hp')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label>Jabatan</label>
-            <select name="jabatan_id" class="form-control @error('jabatan_id') is-invalid @enderror" required>
-                @foreach($jabatan as $j)
-                    <option value="{{ $j->id }}" {{ $karyawan->jabatan_id == $j->id ? 'selected' : '' }}>{{ $j->nama }}</option>
-                @endforeach
-            </select>
-            @error('jabatan_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <button type="submit" class="btn btn-warning">Update</button>
-        <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
-</div>
+    </div>
 @endsection

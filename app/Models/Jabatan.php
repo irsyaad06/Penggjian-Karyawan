@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,11 +9,11 @@ class Jabatan extends Model
 {
     use HasFactory;
 
-    protected $table = 'jabatan';
-    protected $fillable = ['nama', 'gaji_pokok', 'tunjangan'];
+    protected $table = 'jabatan'; // Menentukan nama tabel secara eksplisit
+    protected $fillable = ['nama_jabatan', 'gaji_pokok'];
 
     public function karyawan()
     {
-        return $this->hasMany(Karyawan::class);
+        return $this->hasMany(Karyawan::class, 'jabatan_id');
     }
 }

@@ -10,11 +10,10 @@ class BonusLembur extends Model
     use HasFactory;
 
     protected $table = 'bonus_lembur';
-    protected $fillable = ['karyawan_id', 'bulan', 'tahun', 'bonus', 'lembur', 'status_bayar'];
+    protected $fillable = ['karyawan_id', 'bonus', 'lembur', 'bulan', 'tahun'];
 
-    // Relasi ke model Karyawan
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(Karyawan::class, 'karyawan_id');
     }
 }

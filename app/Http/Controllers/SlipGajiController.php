@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\SlipGaji;
 use App\Models\Karyawan;
-use Illuminate\Http\Request;
+use App\Models\BonusLembur;
+use App\Models\PajakPenghasilan;
+use App\Models\Cuti;
+use App\Models\Potongan;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+
 
 class SlipGajiController extends Controller
 {
     public function index()
     {
-        $slipGaji = SlipGaji::with('karyawan')->orderBy('tanggal_gajian', 'desc')->get();
+        $slipGaji = SlipGaji::with('karyawan')->get();
         return view('slip_gaji.index', compact('slipGaji'));
     }
 
@@ -22,57 +27,120 @@ class SlipGajiController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'karyawan_id' => 'required|exists:karyawan,id',
-        'tanggal_gajian' => 'required|date',
-    ]);
+    {
+        $request->validate([
+            'karyawan_id' => 'required|exists:karyawan,id',
+            'bulan' => 'required|string',
+            'tahun' => 'required|integer',
+        ]);
 
-    $karyawan = Karyawan::with('jabatan')->findOrFail($request->karyawan_id);
+        // Cek apakah sudah ada slip gaji untuk bulan & tahun ini
+        $existingSlip = SlipGaji::where('karyawan_id', $request->karyawan_id)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->first();
 
-    // Ambil data dari Jabatan
-    $gajiPokok = $karyawan->jabatan->gaji_pokok;
-    $tunjangan = $karyawan->jabatan->tunjangan ?? 0;
-    $pajak = 50000; // Contoh pajak tetap
-    $potonganBpjs = $gajiPokok * 0.05; // 5% dari gaji pokok sebagai BPJS
-    $gajiBersih = ($gajiPokok + $tunjangan) - ($pajak + $potonganBpjs);
+        if ($existingSlip) {
+            return redirect()->back()->with('error', 'Slip Gaji untuk bulan dan tahun ini sudah ada!');
+        }
 
-    // Simpan data ke database
-    SlipGaji::create([
-        'karyawan_id' => $request->karyawan_id,
-        'gaji_bersih' => $gajiBersih,
-        'pajak' => $pajak,
-        'potongan_bpjs' => $potonganBpjs,
-        'tanggal_gajian' => $request->tanggal_gajian,
-    ]);
+        // Ambil karyawan
+        $karyawan = Karyawan::findOrFail($request->karyawan_id);
 
-    return redirect()->route('slip-gaji.index')->with('success', 'Slip Gaji berhasil ditambahkan!');
-}
+        // Ambil data terkait perhitungan gaji berdasarkan bulan & tahun yang dipilih
+        $bonusLembur = BonusLembur::where('karyawan_id', $karyawan->id)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->first();
 
+        $pajakPenghasilan = PajakPenghasilan::where('karyawan_id', $karyawan->id)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->first();
+
+        // **Perbaikan di sini:** Ambil **potongan berdasarkan bulan & tahun**
+        $potongan = Potongan::where('karyawan_id', $karyawan->id)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->first();
+
+        // Gaji Pokok (bisa ditarik dari model Jabatan jika perlu)
+        $gajiPokok = $karyawan->jabatan->gaji_pokok ?? 0;
+
+        // Perhitungan Slip Gaji
+        $totalBonus = $bonusLembur ? $bonusLembur->bonus : 0;
+        $totalLembur = $bonusLembur ? $bonusLembur->lembur : 0;
+        $totalPajak = $pajakPenghasilan ? $pajakPenghasilan->jumlah_pajak : 0;
+        $totalPotongan = $potongan ? $potongan->jumlah_potongan : 0;
+
+        // Hitung Gaji Bersih
+        $jumlahGaji = $gajiPokok + $totalBonus + $totalLembur - $totalPajak - $totalPotongan;
+
+        // Simpan Slip Gaji
+        SlipGaji::create([
+            'karyawan_id' => $karyawan->id,
+            'gaji_pokok' => $gajiPokok,
+            'total_bonus' => $totalBonus,
+            'total_lembur' => $totalLembur,
+            'total_pajak' => $totalPajak,
+            'total_potongan' => $totalPotongan,
+            'jumlah_gaji' => $jumlahGaji,
+            'bulan' => $request->bulan,
+            'tahun' => $request->tahun,
+        ]);
+
+        return redirect()->route('slip_gaji.index')->with('success', 'Slip Gaji berhasil dibuat!');
+    }
+
+
+    public function show($id)
+    {
+        $slipGaji = SlipGaji::with('karyawan')->findOrFail($id);
+        return view('slip_gaji.show', compact('slipGaji'));
+    }
 
     public function destroy($id)
     {
-        SlipGaji::destroy($id);
-        return redirect()->route('slip-gaji.index')->with('success', 'Slip Gaji berhasil dihapus!');
+        $slipGaji = SlipGaji::findOrFail($id);
+        $slipGaji->delete();
+        return redirect()->route('slip_gaji.index')->with('success', 'Slip Gaji berhasil dihapus!');
     }
 
-    public function generatePDF($id)
+
+
+
+    public function downloadPDF($id)
     {
-        $slip = SlipGaji::with(['karyawan.jabatan'])->findOrFail($id);
-    
-        // Debugging: Cek apakah data benar-benar ada
-        if (!$slip) {
-            abort(404, 'Slip Gaji tidak ditemukan');
-        }
-    
-        // Pastikan gaji_pokok dan tunjangan ada
-        $gajiPokok = $slip->karyawan->jabatan->gaji_pokok ?? 0;
-        $tunjangan = $slip->karyawan->jabatan->tunjangan ?? 0;
-    
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('slip_gaji.pdf', compact('slip', 'gajiPokok', 'tunjangan'));
-        return $pdf->download('Slip_Gaji_'.$slip->karyawan->nama.'.pdf');
-    }
-    
+        $slip = SlipGaji::with('karyawan.jabatan')->findOrFail($id);
 
-    
+        // Debugging: Cek apakah data ditemukan
+        if (!$slip) {
+            return redirect()->back()->with('error', 'Slip Gaji tidak ditemukan.');
+        }
+
+        // Load view untuk PDF dan generate PDF
+        $pdf = Pdf::loadView('slip_gaji.pdf_single', compact('slip'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Slip_Gaji_' . $slip->karyawan->nama . '.pdf');
+    }
+
+
+    public function exportAllPDF()
+    {
+        // Ambil semua data slip gaji
+        $slipGaji = SlipGaji::with('karyawan')->get();
+
+        // Jika tidak ada data, kembalikan pesan error
+        if ($slipGaji->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada data slip gaji untuk didownload.');
+        }
+
+        // Generate PDF dari blade view slip_gaji/pdf_all.blade.php
+        $pdf = Pdf::loadView('slip_gaji.pdf_all', compact('slipGaji'))
+            ->setPaper('a4', 'landscape');
+
+        // Download file langsung
+        return $pdf->download('Semua_Slip_Gaji.pdf');
+    }
 }

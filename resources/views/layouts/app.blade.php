@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistem Penggajian')</title>
+
+    <!-- CSS Libraries -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -16,6 +18,7 @@
             background-color: #f8f9fa;
         }
 
+        /* Sidebar Styling */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -46,14 +49,7 @@
             list-style: none;
             padding: 0;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
             margin-top: 10px;
-        }
-
-        .sidebar ul li {
-            width: 100%;
         }
 
         .sidebar ul li a {
@@ -76,23 +72,27 @@
             font-size: 18px;
         }
 
-        .logout-form {
+        /* Logout Button (Selalu di bawah) */
+        .logout-container {
             margin-top: auto;
-            width: 100%;
-            padding: 20px;
+            width: 90%;
+            padding: 10px;
         }
 
         .logout-btn {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 5px;
             text-align: center;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .logout-btn i {
@@ -103,6 +103,7 @@
             background-color: #c82333;
         }
 
+        /* Main Content Styling */
         .content {
             margin-left: 250px;
             width: 100%;
@@ -120,6 +121,7 @@
             margin-left: 0;
         }
 
+        /* Sidebar Toggle Button */
         .toggle-btn {
             position: fixed;
             top: 20px;
@@ -151,57 +153,71 @@
 
 <body>
 
-    <!-- Sidebar -->
+    <!-- Sidebar (Hanya Tampil Jika User Login) -->
+    @auth
     <div class="sidebar" id="sidebar">
         <div class="logo-container">
             <img src="{{ asset('logo.png') }}" alt="SIGAWAi Logo">
         </div>
 
         <ul>
-            <li class="{{ request()->is('karyawan*') ? 'active' : '' }}">
-                <a href="{{ route('karyawan.index') }}"><i class="fas fa-users"></i> Karyawan</a>
-            </li>
+            <!-- Menu untuk Admin -->
+            @if(Auth::check() && auth()->user()->isAdmin())
             <li class="{{ request()->is('jabatan*') ? 'active' : '' }}">
                 <a href="{{ route('jabatan.index') }}"><i class="fas fa-briefcase"></i> Jabatan</a>
             </li>
-            <li class="{{ request()->is('slip-gaji*') ? 'active' : '' }}">
-                <a href="{{ route('slip-gaji.index') }}"><i class="fas fa-file-invoice-dollar"></i> Slip Gaji</a>
+            <li class="{{ request()->is('karyawan*') ? 'active' : '' }}">
+                <a href="{{ route('karyawan.index') }}"><i class="fas fa-users"></i> Karyawan</a>
             </li>
-            <li class="{{ request()->is('laporan-gaji*') ? 'active' : '' }}">
-                <a href="{{ route('laporan-gaji.index') }}"><i class="fas fa-chart-line"></i> Laporan Gaji</a>
+            <li class="{{ request()->is('potongan*') ? 'active' : '' }}">
+                <a href="{{ route('potongan.index') }}"><i class="fas fa-percentage"></i> Potongan</a>
             </li>
-            <li class="{{ request()->is('cuti*') ? 'active' : '' }}">
-                <a href="{{ route('cuti.index') }}"><i class="fas fa-calendar-day"></i> Cuti</a>
-            </li>
-            <li class="{{ request()->is('pajak-penghasilan*') ? 'active' : '' }}">
+            <li class="{{ request()->is('pajak_penghasilan*') ? 'active' : '' }}">
                 <a href="{{ route('pajak_penghasilan.index') }}"><i class="fas fa-money-check-alt"></i> Pajak Penghasilan</a>
             </li>
-            <li class="{{ request()->is('bonus-lembur*') ? 'active' : '' }}">
+            <li class="{{ request()->is('bonus_lembur*') ? 'active' : '' }}">
                 <a href="{{ route('bonus_lembur.index') }}"><i class="fas fa-hand-holding-usd"></i> Bonus & Lembur</a>
             </li>
-            <li class="{{ request()->is('pembayaran-gaji*') ? 'active' : '' }}">
+            <li class="{{ request()->is('slip_gaji*') ? 'active' : '' }}">
+                <a href="{{ route('slip_gaji.index') }}"><i class="fas fa-file-invoice-dollar"></i> Slip Gaji</a>
+            </li>
+            <li class="{{ request()->is('pembayaran_gaji*') ? 'active' : '' }}">
                 <a href="{{ route('pembayaran_gaji.index') }}"><i class="fas fa-money-bill-wave"></i> Pembayaran Gaji</a>
             </li>
+            @endif
+
+            <!-- Menu untuk Karyawan -->
+            @if(Auth::check() && auth()->user()->isKaryawan())
+            <li class="{{ request()->is('dashboard*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
+            </li>
+            @endif
         </ul>
 
-
-        <!-- Tombol Logout -->
-        <form class="logout-form" action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </form>
+        <!-- Logout Button -->
+        <div class="logout-container">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
     </div>
 
     <button class="toggle-btn" id="toggleSidebar">
         <i class="fas fa-bars"></i>
     </button>
+    @endauth
 
+    <!-- Main Content -->
     <div class="content" id="content">
         <div class="container mt-4">
             @yield('content')
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('toggleSidebar').addEventListener('click', function() {
@@ -209,22 +225,10 @@
             let content = document.querySelector('.content');
             let button = document.getElementById('toggleSidebar');
 
-            if (sidebar.classList.contains('sidebar-hidden')) {
-                sidebar.classList.remove('sidebar-hidden');
-                content.classList.remove('content-expanded');
-                button.style.left = '225px';
-            } else {
-                sidebar.classList.add('sidebar-hidden');
-                content.classList.add('content-expanded');
-                button.style.left = '10px';
-            }
+            sidebar.classList.toggle('sidebar-hidden');
+            content.classList.toggle('content-expanded');
+            button.style.left = sidebar.classList.contains('sidebar-hidden') ? '10px' : '225px';
         });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        setTimeout(function() {
-            $(".alert").fadeOut("slow");
-        }, 1000);
     </script>
 </body>
 

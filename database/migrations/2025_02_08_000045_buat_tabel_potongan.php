@@ -10,21 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('potongan', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('slip_gaji_id');
-        $table->decimal('pajak', 10, 2)->nullable();
-        $table->decimal('bpjs', 10, 2)->nullable();
-        $table->decimal('potongan_lainnya', 10, 2)->nullable();
-        $table->timestamps();
+    {
+        Schema::create('potongan', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->decimal('jumlah_potongan', 15, 2);
+            $table->string('keterangan')->nullable();
+            $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);
+            $table->year('tahun');
+            $table->timestamps();
+        });
+    }
 
-        $table->foreign('slip_gaji_id')->references('id')->on('slip_gaji')->onDelete('cascade');
-    });
-}
 
-    
-    
+
 
     /**
      * Reverse the migrations.

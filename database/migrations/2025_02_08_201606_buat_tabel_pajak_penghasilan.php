@@ -13,14 +13,11 @@ return new class extends Migration
     {
         Schema::create('pajak_penghasilan', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('karyawan_id');
-            $table->year('tahun');  // Menyimpan tahun
-            $table->string('bulan');  // Menggunakan string untuk bulan (contoh: "January", "February")
-            $table->decimal('jumlah_pajak', 10, 2);
-            $table->enum('status_pembayaran', ['belum_bayar', 'sudah_bayar']);
+            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->decimal('jumlah_pajak', 15, 2);
+            $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);
+            $table->year('tahun');
             $table->timestamps();
-
-            $table->foreign('karyawan_id')->references('id')->on('karyawan')->onDelete('cascade');
         });
     }
 

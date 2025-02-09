@@ -11,9 +11,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('laporan_gajis', function (Blueprint $table) {
+        Schema::create('laporan_gaji', function (Blueprint $table) {
             $table->id();
-            $table->string('periode'); // Ubah ke string "YYYY-MM" agar lebih fleksibel
+            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->decimal('jumlah_gaji', 15, 2); // Gaji yang dilaporkan
+            $table->decimal('pajak', 15, 2); // Pajak yang dibayarkan
+            $table->decimal('bonus', 15, 2); // Bonus yang diterima
+            $table->decimal('lembur', 15, 2); // Lembur yang diterima
+            $table->decimal('potongan', 15, 2); // Potongan yang diterima
+            $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);
+            $table->year('tahun');
             $table->timestamps();
         });
     }

@@ -10,11 +10,10 @@ class PajakPenghasilan extends Model
     use HasFactory;
 
     protected $table = 'pajak_penghasilan';
-    protected $fillable = ['karyawan_id', 'tahun', 'bulan', 'jumlah_pajak', 'status_pembayaran'];
+    protected $fillable = ['karyawan_id', 'jumlah_pajak', 'bulan', 'tahun'];
 
-    // Relasi ke model Karyawan
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(Karyawan::class, 'karyawan_id');
     }
 }

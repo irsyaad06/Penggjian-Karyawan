@@ -1,42 +1,55 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\HakAksesController;
-use App\Http\Controllers\PenggunaController;
-use App\Http\Controllers\JabatanController;
-use App\Http\Controllers\KaryawanController;
-use App\Http\Controllers\SlipGajiController;
-use App\Http\Controllers\PotonganController;
-use App\Http\Controllers\LaporanGajiController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PembayaranGajiController;
+use App\Http\Controllers\{
+    HakAksesController,
+    PenggunaController,
+    JabatanController,
+    KaryawanController,
+    SlipGajiController,
+    PotonganController,
+    LaporanGajiController,
+    PajakPenghasilanController,
+    BonusLemburController
+};
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Ini adalah tempat untuk mendaftarkan rute aplikasi web. Semua rute ini 
-| akan dimuat oleh RouteServiceProvider dan ditetapkan ke grup "web".
-|
-*/
-
-// Route Halaman Utama
+// Halaman Utama
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Resource Routes
-Route::resource('hak-akses', HakAksesController::class);
-Route::resource('pengguna', PenggunaController::class);
-Route::resource('jabatan', JabatanController::class);
-Route::resource('karyawan', KaryawanController::class);
-Route::resource('slip-gaji', SlipGajiController::class);
-Route::resource('potongan', PotonganController::class);
-Route::resource('laporan-gaji', LaporanGajiController::class);
-Route::get('slip-gaji/{id}/pdf', [SlipGajiController::class, 'generatePDF'])->name('slip-gaji.generatePDF');
+// **Rute Login & Logout**
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/logout', function () {
-    Auth::logout();
-    return redirect('/');
-})->name('logout');
+// **Rute untuk Admin**
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('hak-akses', HakAksesController::class);
+    Route::resource('pengguna', PenggunaController::class);
+    Route::resource('jabatan', JabatanController::class);
+    Route::resource('karyawan', KaryawanController::class);
+    Route::resource('slip_gaji', SlipGajiController::class);
 
+    // Download Slip Gaji
+    Route::get('/slip_gaji/download-all', [SlipGajiController::class, 'exportAllPDF'])->name('slip_gaji.downloadAll');
+    Route::get('slip_gaji/{id}/download', [SlipGajiController::class, 'downloadPDF'])->name('slip_gaji.downloadPDF');
+
+    Route::resource('potongan', PotonganController::class);
+    Route::resource('laporan-gaji', LaporanGajiController::class);
+    Route::resource('pajak_penghasilan', PajakPenghasilanController::class);
+    Route::resource('bonus_lembur', BonusLemburController::class);
+    Route::resource('pembayaran_gaji', PembayaranGajiController::class);
+
+    // API untuk ambil slip gaji berdasarkan karyawan
+    Route::get('/get-slip-gaji/{karyawan_id}', [PembayaranGajiController::class, 'getSlipGajiByKaryawan']);
+    Route::post('pembayaran_gaji/{id}/update-status', [PembayaranGajiController::class, 'updateStatus'])->name('pembayaran_gaji.updateStatus');
+});
+
+// **Rute untuk Karyawan**
+Route::middleware(['auth', 'role:karyawan'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});

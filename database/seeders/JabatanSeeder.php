@@ -2,16 +2,26 @@
 
 namespace Database\Seeders;
 
+use App\Models\Jabatan;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class JabatanSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('jabatan')->insert([
-            ['nama' => 'Manager', 'gaji_pokok' => 10000000, 'tunjangan' => 2000000],
-            ['nama' => 'Staff', 'gaji_pokok' => 5000000, 'tunjangan' => 1000000],
+        Jabatan::create([
+            'nama_jabatan' => 'Manager',
+            'gaji_pokok' => 8000000,
+        ]);
+
+        Jabatan::create([
+            'nama_jabatan' => 'Staff',
+            'gaji_pokok' => 5000000,
+        ]);
+
+        Jabatan::create([
+            'nama_jabatan' => 'Supervisor',
+            'gaji_pokok' => 6000000,
         ]);
     }
 }

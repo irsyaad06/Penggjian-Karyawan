@@ -11,18 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cuti', function (Blueprint $table) {
+        Schema::create('izin', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('karyawan_id');
-            $table->string('jenis_cuti');
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
+            $table->foreignId('karyawan_id')->constrained('karyawan');
+            $table->date('tanggal');
+            $table->text('alasan');
             $table->enum('status', ['pending', 'disetujui', 'ditolak']);
             $table->timestamps();
-        
-            $table->foreign('karyawan_id')->references('id')->on('karyawan')->onDelete('cascade');
         });
-        
     }
 
     /**
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cuti');
+        Schema::dropIfExists('izin');
     }
 };
