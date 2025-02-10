@@ -15,13 +15,28 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5>Data Slip Gaji</h5>
-            <form method="GET" action="{{ route('slip_gaji.index') }}" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan karyawan, bulan, tahun, gaji, bonus, dll." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary">Cari</button>
-                </div>
+            <form method="GET" action="{{ route('slip_gaji.index') }}" class="d-flex gap-2">
+                <!-- Filter Bulan -->
+                <select name="bulan" class="form-control">
+                    <option value="">Semua Bulan</option>
+                    @foreach(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $b)
+                        <option value="{{ $b }}" {{ request('bulan') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Sorting -->
+                <select name="sort" class="form-control">
+                    <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Gaji Tertinggi</option>
+                    <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Gaji Terendah</option>
+                </select>
+
+                <!-- Pencarian -->
+                <input type="text" name="search" class="form-control" placeholder="Cari karyawan, tahun, dll." value="{{ request('search') }}">
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i></button>
             </form>
         </div>
+
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
@@ -54,12 +69,7 @@
                         <td>Rp {{ number_format($item->jumlah_gaji, 0, ',', '.') }}</td>
                         <td>
                             <a href="{{ route('slip_gaji.show', $item->id) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
-
-                            <a href="{{ route('slip_gaji.downloadPDF', $item->id) }}" class="btn btn-success btn-sm">
-                                <i class="fas fa-file-pdf"></i>
-                            </a>
-
-                            <!-- Delete Form -->
+                            <a href="{{ route('slip_gaji.downloadPDF', $item->id) }}" class="btn btn-success btn-sm"><i class="fas fa-file-pdf"></i></a>
                             <form method="POST" action="{{ route('slip_gaji.destroy', $item->id) }}" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -70,6 +80,11 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $slipGaji->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 </div>

@@ -15,27 +15,28 @@ use Illuminate\Http\Request;
 class SlipGajiController extends Controller
 {
     public function index(Request $request)
-{
-    $search = $request->input('search');
+    {
+        $search = $request->input('search');
+        $bulan = $request->input('bulan');
+        $sort = $request->input('sort', 'desc'); 
 
-    $slipGaji = SlipGaji::with('karyawan')
-        ->when($search, function ($query, $search) {
-            return $query->whereHas('karyawan', function ($q) use ($search) {
+        $slipGaji = SlipGaji::with('karyawan')
+            ->when($bulan, function ($query, $bulan) {
+                return $query->where('bulan', $bulan);
+            })
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('karyawan', function ($q) use ($search) {
                     $q->where('nama', 'like', "%$search%");
                 })
-                ->orWhere('bulan', 'like', "%$search%")
-                ->orWhere('tahun', 'like', "%$search%")
-                ->orWhere('gaji_pokok', 'like', "%$search%")
-                ->orWhere('total_bonus', 'like', "%$search%")
-                ->orWhere('total_lembur', 'like', "%$search%")
-                ->orWhere('total_pajak', 'like', "%$search%")
-                ->orWhere('total_potongan', 'like', "%$search%")
-                ->orWhere('jumlah_gaji', 'like', "%$search%");
-        })
-        ->get();
+                    ->orWhere('tahun', 'like', "%$search%")
+                    ->orWhere('jumlah_gaji', 'like', "%$search%");
+            })
+            ->orderBy('jumlah_gaji', $sort) // Sorting berdasarkan total gaji
+            ->paginate(10);
 
-    return view('slip_gaji.index', compact('slipGaji'));
-}
+        return view('slip_gaji.index', compact('slipGaji'));
+    }
+
 
 
     public function create()
