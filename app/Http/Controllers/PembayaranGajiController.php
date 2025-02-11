@@ -10,21 +10,21 @@ use Illuminate\Http\Request;
 class PembayaranGajiController extends Controller
 {
     public function index(Request $request)
-{
-    $query = PembayaranGaji::with(['karyawan', 'slipGaji']);
+    {
+        $query = PembayaranGaji::with(['karyawan', 'slipGaji']);
 
-    if ($request->has('search')) {
-        $search = $request->search;
-        $query->whereHas('karyawan', function ($q) use ($search) {
-            $q->where('nama', 'like', "%$search%");
-        })->orWhere('metode_pembayaran', 'like', "%$search%")
-          ->orWhere('status', 'like', "%$search%");
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->whereHas('karyawan', function ($q) use ($search) {
+                $q->where('nama', 'like', "%$search%");
+            })->orWhere('metode_pembayaran', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%");
+        }
+
+        $pembayaranGaji = $query->get();
+
+        return view('pembayaran_gaji.index', compact('pembayaranGaji'));
     }
-
-    $pembayaranGaji = $query->get();
-
-    return view('pembayaran_gaji.index', compact('pembayaranGaji'));
-}
 
 
     public function create(Request $request)
@@ -70,10 +70,16 @@ class PembayaranGajiController extends Controller
 
 
     public function show($id)
-    {
-        $pembayaran = PembayaranGaji::with(['karyawan', 'slipGaji'])->findOrFail($id);
-        return view('pembayaran_gaji.show', compact('pembayaran'));
+{
+    $pembayaran = PembayaranGaji::with(['karyawan', 'slipGaji'])->findOrFail($id);
+    
+    if (!$pembayaran->slipGaji) {
+        return redirect()->route('pembayaran_gaji.index')->with('error', 'Slip gaji tidak ditemukan!');
     }
+
+    return view('pembayaran_gaji.show', compact('pembayaran'));
+}
+
 
     public function updateStatus(Request $request, $id)
     {

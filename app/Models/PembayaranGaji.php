@@ -23,9 +23,9 @@ class PembayaranGaji extends Model
     {
         return $this->belongsTo(Karyawan::class);
     }
-
     public function slipGaji()
-    {
-        return $this->belongsTo(SlipGaji::class);
-    }
+{
+    return $this->belongsTo(SlipGaji::class, 'slip_gaji_id')->withDefault();
+}
+
 }

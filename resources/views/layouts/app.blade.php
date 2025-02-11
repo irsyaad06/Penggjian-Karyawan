@@ -226,6 +226,17 @@
             button.style.left = sidebar.classList.contains('sidebar-hidden') ? '10px' : '225px';
         });
     </script>
+    <script>
+        setTimeout(function() {
+            let alert = document.querySelector('.alert-success');
+            if (alert) {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 1500);
+    </script>
+
 </body>
 
 </html>
