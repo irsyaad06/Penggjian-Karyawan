@@ -32,6 +32,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('pengguna', PenggunaController::class);
     Route::resource('jabatan', JabatanController::class);
     Route::resource('karyawan', KaryawanController::class);
+    Route::get('karyawan/generate-nik', [KaryawanController::class, 'generateNIK']);
     Route::post('/karyawan/import', [KaryawanController::class, 'import'])->name('karyawan.import');
     Route::resource('slip_gaji', SlipGajiController::class);
 

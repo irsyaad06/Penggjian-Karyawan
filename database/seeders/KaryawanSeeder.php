@@ -11,6 +11,7 @@ class KaryawanSeeder extends Seeder
     public function run()
     {
         Karyawan::create([
+            'nik' => 11102074,
             'nama' => 'John Doe',
             'alamat' => 'Jl. Merdeka No. 1',
             'email' => 'johndoe@example.com',
@@ -19,6 +20,7 @@ class KaryawanSeeder extends Seeder
         ]);
 
         Karyawan::create([
+            'nik' => 11102075,
             'nama' => 'Jane Smith',
             'alamat' => 'Jl. Kebon Jeruk No. 5',
             'email' => 'janesmith@example.com',

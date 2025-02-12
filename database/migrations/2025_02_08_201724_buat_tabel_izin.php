@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('izin', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawan');
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade'); // Jika karyawan dihapus, izin juga ikut terhapus
             $table->date('tanggal');
             $table->text('alasan');
-            $table->enum('status', ['pending', 'disetujui', 'ditolak']);
+            $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending'); // Default status 'pending'
             $table->timestamps();
         });
     }

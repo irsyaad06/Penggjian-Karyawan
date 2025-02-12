@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('slip_gaji', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->unsignedBigInteger('karyawan_id');
+            $table->foreign('karyawan_id')->references('id')->on('karyawan')->onDelete('cascade');
             $table->decimal('gaji_pokok', 15, 2);
             $table->decimal('total_bonus', 15, 2);
             $table->decimal('total_lembur', 15, 2);
@@ -26,12 +27,11 @@ return new class extends Migration
         });
     }
 
-
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
-        //
+        Schema::dropIfExists('slip_gaji');
     }
 };

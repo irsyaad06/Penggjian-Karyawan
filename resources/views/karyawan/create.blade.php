@@ -11,6 +11,7 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('karyawan.store') }}">
                     @csrf
+                    
                     <div class="form-group">
                         <label for="nama">Nama</label>
                         <input type="text" name="nama" class="form-control" required>
@@ -18,12 +19,17 @@
 
                     <div class="form-group mt-3">
                         <label for="jabatan_id">Jabatan</label>
-                        <select name="jabatan_id" class="form-control" required>
+                        <select name="jabatan_id" id="jabatan_id" class="form-control" required>
                             <option value="">Pilih Jabatan</option>
                             @foreach($jabatan as $j)
-                                <option value="{{ $j->id }}">{{ $j->nama_jabatan }}</option>
+                                <option value="{{ $j->id }}" data-nama="{{ $j->nama_jabatan }}">{{ $j->nama_jabatan }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="nik">NIK (Auto Generate)</label>
+                        <input type="text" name="nik" id="nik" class="form-control" readonly>
                     </div>
 
                     <div class="form-group mt-3">
@@ -46,4 +52,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('jabatan_id').addEventListener('change', function() {
+            let selectedOption = this.options[this.selectedIndex];
+            let jabatanNama = selectedOption.getAttribute('data-nama');
+            let tahun = new Date().getFullYear();
+
+            if (jabatanNama) {
+                fetch("{{ url('karyawan/generate-nik') }}?jabatan=" + encodeURIComponent(jabatanNama))
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('nik').value = data.nik;
+                    });
+            } else {
+                document.getElementById('nik').value = "";
+            }
+        });
+    </script>
 @endsection

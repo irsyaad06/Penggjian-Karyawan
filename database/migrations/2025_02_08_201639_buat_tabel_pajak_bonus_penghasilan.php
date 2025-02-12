@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bonus_lembur', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade'); // Jika karyawan dihapus, bonus/lembur ikut terhapus
             $table->decimal('bonus', 15, 2);
             $table->decimal('lembur', 15, 2);
             $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);

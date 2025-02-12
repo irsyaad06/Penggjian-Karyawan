@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('karyawan', function (Blueprint $table) {
             $table->id();
+            $table->string('nik') ->unique();
             $table->string('nama');
             $table->string('alamat');
             $table->string('email')->unique();
             $table->string('telepon');
-            $table->foreignId('jabatan_id')->constrained('jabatan'); // Referensi ke tabel jabatan tanpa 's'
+            $table->foreignId('jabatan_id')->constrained('jabatan');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('karyawan');
     }
 };

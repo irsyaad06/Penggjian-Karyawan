@@ -9,11 +9,11 @@ return new class extends Migration {
     {
         Schema::create('pembayaran_gaji', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
-            $table->foreignId('slip_gaji_id')->constrained('slip_gaji')->onDelete('cascade');
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade'); // Jika karyawan dihapus, pembayaran ikut terhapus
+            $table->foreignId('slip_gaji_id')->constrained('slip_gaji')->onDelete('cascade'); // Jika slip gaji dihapus, pembayaran ikut terhapus
             $table->date('tanggal_pembayaran');
             $table->string('metode_pembayaran');
-            $table->enum('status', ['pending', 'selesai'])->default('pending');
+            $table->enum('status', ['pending', 'selesai'])->default('pending'); // Default status 'pending'
             $table->timestamps();
         });
     }

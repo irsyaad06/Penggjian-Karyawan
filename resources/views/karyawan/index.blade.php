@@ -39,6 +39,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>NIK</th>
                         <th>Nama</th>
                         <th>Jabatan</th>
                         <th>Email</th>
@@ -50,6 +51,7 @@
                     @forelse($karyawan as $index => $item)
                     <tr>
                         <td>{{ $index + 1 }}</td>
+                        <td>{{ $item->nik }}</td>
                         <td>{{ $item->nama }}</td>
                         <td>{{ $item->jabatan->nama_jabatan }}</td>
                         <td>{{ $item->email }}</td>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('potongan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawan'); // Referensi ke tabel karyawan
+            $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade'); // Hapus otomatis jika karyawan dihapus
             $table->decimal('jumlah_potongan', 15, 2);
             $table->string('keterangan')->nullable();
             $table->enum('bulan', ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']);
@@ -22,14 +22,11 @@ return new class extends Migration
         });
     }
 
-
-
-
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
-        //
+        Schema::dropIfExists('potongan');
     }
 };
