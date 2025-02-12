@@ -6,6 +6,9 @@ use App\Models\PembayaranGaji;
 use App\Models\SlipGaji;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PembayaranGajiExport;
+
 
 class PembayaranGajiController extends Controller
 {
@@ -25,8 +28,6 @@ class PembayaranGajiController extends Controller
 
         return view('pembayaran_gaji.index', compact('pembayaranGaji'));
     }
-
-
     public function create(Request $request)
     {
         $karyawan = Karyawan::with('jabatan')->get();
@@ -40,7 +41,6 @@ class PembayaranGajiController extends Controller
 
         return view('pembayaran_gaji.create', compact('karyawan', 'slipGaji'));
     }
-
     public function getSlipGajiByKaryawan($karyawan_id)
     {
         $slipGaji = SlipGaji::where('karyawan_id', $karyawan_id)
@@ -49,10 +49,6 @@ class PembayaranGajiController extends Controller
 
         return response()->json($slipGaji);
     }
-
-
-
-
     public function store(Request $request)
     {
         $request->validate([
@@ -67,20 +63,16 @@ class PembayaranGajiController extends Controller
 
         return redirect()->route('pembayaran_gaji.index')->with('success', 'Pembayaran Gaji berhasil disimpan!');
     }
-
-
     public function show($id)
-{
-    $pembayaran = PembayaranGaji::with(['karyawan', 'slipGaji'])->findOrFail($id);
-    
-    if (!$pembayaran->slipGaji) {
-        return redirect()->route('pembayaran_gaji.index')->with('error', 'Slip gaji tidak ditemukan!');
+    {
+        $pembayaran = PembayaranGaji::with(['karyawan', 'slipGaji'])->findOrFail($id);
+
+        if (!$pembayaran->slipGaji) {
+            return redirect()->route('pembayaran_gaji.index')->with('error', 'Slip gaji tidak ditemukan!');
+        }
+
+        return view('pembayaran_gaji.show', compact('pembayaran'));
     }
-
-    return view('pembayaran_gaji.show', compact('pembayaran'));
-}
-
-
     public function updateStatus(Request $request, $id)
     {
         $pembayaran = PembayaranGaji::findOrFail($id);
@@ -88,10 +80,13 @@ class PembayaranGajiController extends Controller
 
         return redirect()->route('pembayaran_gaji.index')->with('success', 'Status Pembayaran telah diperbarui!');
     }
-
     public function destroy($id)
     {
         PembayaranGaji::findOrFail($id)->delete();
         return redirect()->route('pembayaran_gaji.index')->with('success', 'Pembayaran Gaji berhasil dihapus!');
+    }
+    public function exportExcel()
+    {
+        return Excel::download(new PembayaranGajiExport, 'laporan_pembagian_gaji.xlsx');
     }
 }

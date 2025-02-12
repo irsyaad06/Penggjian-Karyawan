@@ -28,11 +28,6 @@
                     </div>
 
                     <div class="form-group mt-3">
-                        <label for="nik">NIK (Auto Generate)</label>
-                        <input type="text" name="nik" id="nik" class="form-control" readonly>
-                    </div>
-
-                    <div class="form-group mt-3">
                         <label for="email">Email</label>
                         <input type="email" name="email" class="form-control" required>
                     </div>

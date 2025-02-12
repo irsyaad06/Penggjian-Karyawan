@@ -48,6 +48,28 @@
         .bold {
             font-weight: bold;
         }
+
+        .ttd {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .ttd div {
+            display: inline-block;
+            width: 45%;
+            text-align: center;
+        }
+
+        .signature {
+            margin-top: 60px;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .date-right {
+            text-align: right;
+            margin-top: 80px;
+        }
     </style>
 </head>
 
@@ -68,6 +90,10 @@
                     <td>: {{ $slip->bulan }} {{ $slip->tahun }}</td>
                 </tr>
                 <tr>
+                    <td>NIK</td>
+                    <td>: {{ $slip->karyawan->nik}}</td>
+                </tr>
+                <tr>
                     <td>Nama Karyawan</td>
                     <td>: {{ $slip->karyawan->nama }}</td>
                 </tr>
@@ -77,7 +103,7 @@
                 </tr>
             </table>
         </div>
-
+        <hr>
         <div class="section">
             <div class="section-title">PENERIMAAN</div>
             <table>
@@ -99,7 +125,7 @@
                 </tr>
             </table>
         </div>
-
+        <hr>
         <div class="section">
             <div class="section-title">PENGURANGAN</div>
             <table>
@@ -113,7 +139,7 @@
                 </tr>
             </table>
         </div>
-
+        <hr>
         <div class="section">
             <table>
                 <tr class="bold">
@@ -122,7 +148,21 @@
                 </tr>
             </table>
         </div>
+        <div class="date-right">
+            <p>Bandung, {{ date('d M Y') }}</p>
+        </div>
+        <div class="ttd">
+            <div>
+                <p>HRD</p>
+                <p>Muhammad Irsyaad Fatahilah</p>
+                <p class="signature">.............................</p>
+            </div>
+            <div>
+                <p>Penerima</p>
+                <p>{{ $slip->karyawan->nama }}</p>
+                <p class="signature">.............................</p>
+            </div>
+        </div>
     </div>
 </body>
-
 </html>

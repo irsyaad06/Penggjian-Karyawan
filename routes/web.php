@@ -35,18 +35,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('karyawan/generate-nik', [KaryawanController::class, 'generateNIK']);
     Route::post('/karyawan/import', [KaryawanController::class, 'import'])->name('karyawan.import');
     Route::resource('slip_gaji', SlipGajiController::class);
-
-    // Download Slip Gaji
     Route::get('/slip_gaji/download-all', [SlipGajiController::class, 'exportAllPDF'])->name('slip_gaji.downloadAll');
     Route::get('slip_gaji/{id}/download', [SlipGajiController::class, 'downloadPDF'])->name('slip_gaji.downloadPDF');
-
     Route::resource('potongan', PotonganController::class);
     Route::resource('laporan-gaji', LaporanGajiController::class);
     Route::resource('pajak_penghasilan', PajakPenghasilanController::class);
     Route::resource('bonus_lembur', BonusLemburController::class);
+    Route::get('/pembayaran_gaji/export', [PembayaranGajiController::class, 'exportExcel'])->name('pembayaran_gaji.exportExcel');
     Route::resource('pembayaran_gaji', PembayaranGajiController::class);
-
-    // API untuk ambil slip gaji berdasarkan karyawan
     Route::get('/get-slip-gaji/{karyawan_id}', [PembayaranGajiController::class, 'getSlipGajiByKaryawan']);
     Route::post('pembayaran_gaji/{id}/update-status', [PembayaranGajiController::class, 'updateStatus'])->name('pembayaran_gaji.updateStatus');
 });

@@ -5,6 +5,7 @@
     <h1 class="mb-4">Daftar Pembayaran Gaji</h1>
 
     <a href="{{ url('/pembayaran_gaji/create') }}" class="btn btn-primary mb-3">Tambah Pembayaran</a>
+    <a href="{{ route('pembayaran_gaji.exportExcel') }}" class="btn btn-success mb-3">Export Excel</a>
 
 
     @if(session('success'))

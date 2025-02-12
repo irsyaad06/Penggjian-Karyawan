@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Menampilkan halaman login
+
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Proses login
+
     public function login(Request $request)
     {
         $request->validate([
@@ -27,7 +27,7 @@ class AuthController extends Controller
         return back()->with('error', 'Email atau password salah.');
     }
 
-    // Logout
+
     public function logout()
     {
         Auth::logout();
